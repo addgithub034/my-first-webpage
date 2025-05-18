@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专属恋爱问卷 | 我们的约定</title>
+    <style>
+        :root {
+            --pink-1: #ffe6f2;
+            --pink-2: #ff69b4;
+            --pink-3: #ff1493;
+            --pink-4: #ff0066;
+        }
+
+        body {
+            background: radial-gradient(circle at top left, var(--pink-1), white);
+            font-family: 'Microsoft Yahei', cursive;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255,105,180,0.2);
+            padding: 30px;
+            position: relative;
+            backdrop-filter: blur(8px);
+            z-index: 2;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #ffe6f2;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: var(--pink-4);
+            transition: width 0.5s;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+
+        .step.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        input, button, select {
+            border: 2px solid var(--pink-2);
+            border-radius: 25px;
+            padding: 12px 20px;
+            margin: 10px 0;
+            width: 80%;
+            max-width: 300px;
+            font-size: 16px;
+        }
+
+        button {
+            background: var(--pink-2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: var(--pink-3);
+            transform: scale(1.05);
+        }
+
+        /* 飘落爱心样式 */
+        .hearts span {
+            position: absolute;
+            color: var(--pink-2);
+            animation: fall 3s linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        /* 告白文字区域样式 */
+        .love-letter {
+            font-size: 18px;
+            line-height: 1.8;
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 飘落爱心容器 -->
+<div class="hearts"></div>
+
+<!-- 主要表单容器 -->
+<div class="container">
+    <div class="progress-bar">
+        <div class="progress"></div>
+    </div>
+
+    <!-- 步骤1：相识日期 -->
+    <div class="step active" id="step1">
+        <h2>📅 相识的日子</h2>
+        <input type="date" id="dateInput" required>
+        <button onclick="nextStep(2)">开启回忆</button>
+    </div>
+
+    <!-- 步骤2：专属称呼 -->
+    <div class="step" id="step2">
+        <h2>💌 专属密码验证</h2>
+        <input type="text" id="nicknameInput" placeholder="我平时怎么称呼你？">
+        <button onclick="nextStep(3)">是本人嘛</button>
+    </div>
+
+    <!-- 步骤3：相遇地点 -->
+    <div class="step" id="step3">
+        <h2>📍 初遇场景重现</h2>
+        <select id="locationSelect">
+            <option value="红绿灯">红绿灯</option>
+            <option value="门口">门口</option>
+            <option value="店铺">店铺</option>
+        </select>
+        <button onclick="nextStep(4)">确认地点</button>
+    </div>
+
+    <!-- 步骤4：最终按钮 -->
+    <div class="step" id="step4">
+        <h2>💖 最终确认</h2>
+        <button onclick="completeLove()">查看</button>
+    </div>
+
+    <!-- 告白文字区域 -->
+    <div class="love-letter" id="loveLetter" style="display: none;">
+        <p>乖，什么时候能叫乖乖？</p>
+        <p>学校里，或早有一面之缘，</p>	
+        <p>到现2025年4月又相识</p>
+        <p style="color:var(--pink-4)">💞 ~~~~~~~~💞</p>
+        <p>认成是缘分，又怎样定义缘分呢？</p>
+        <p>缘分是起点、（新）心的开始，</p>
+        <p>过程是开心，终点是开心。</p>
+        <p style="color:var(--pink-4)">💞能否给个机会让自己以后更加用心 💞</p>
+    </div>
+</div>
+
+<script>
+// ============== 配置区域 ==============
+const SPECIAL_DATE = "2025-04-20";  // 相识日期
+const CORRECT_NICKNAME = "乖";      // 正确称呼
+const CORRECT_LOCATION = "门口";    // 正确地点
+
+let currentStep = 1;
+let heartIntervalId = null;
+
+function nextStep(step) {
+    if (currentStep === 1 && document.getElementById('dateInput').value !== SPECIAL_DATE) {
+        alert("⏳ 这个日期好像不太对哦~");
+        return;
+    }
+
+    if (currentStep === 2 && document.getElementById('nicknameInput').value !== CORRECT_NICKNAME) {
+        alert("❌ 这个称呼不够亲密哦~");
+        return;
+    }
+
+    if (currentStep === 3 && document.getElementById('locationSelect').value !== CORRECT_LOCATION) {
+        alert("📍 这里不是我们的故事起点哦");
+        return;
+    }
+
+    // 更新进度条
+    document.querySelector('.progress').style.width = `${(step - 1) * 25}%`;
+
+    // 切换步骤
+    document.querySelector(`#step${currentStep}`).classList.remove('active');
+    document.querySelector(`#step${step}`).classList.add('active');
+    currentStep = step;
+}
+
+function completeLove() {
+    // 设置进度条为100%
+    document.querySelector('.progress').style.width = '100%';
+
+    // 隐藏所有步骤界面
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+
+    // 显示告白文字
+    document.getElementById('loveLetter').style.display = 'block';
+
+    // 开始持续生成新爱心
+    startHeartAnimation();
+}
+
+function startHeartAnimation() {
+    const container = document.querySelector('.hearts');
+
+    // 清空旧爱心
+    container.innerHTML = '';
+
+    // 每隔一段时间添加一批新爱心
+    heartIntervalId = setInterval(() => {
+        for (let i = 0; i < 10; i++) {
+            createHeart();
+        }
+    }, 500); // 每500毫秒生成10个爱心
+}
+
+function createHeart() {
+    const heart = document.createElement('span');
+    heart.innerHTML = '❤';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.top = '-50px'; // 从屏幕顶部开始下落
+    heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+    heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+    document.querySelector('.hearts').appendChild(heart);
+
+    // 3秒后移除旧爱心，防止DOM堆积
+    setTimeout(() => {
+        heart.remove();
+    }, 3000);
+}
+</script>
+
+</body>
+</html>
